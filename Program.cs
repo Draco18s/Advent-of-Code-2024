@@ -1,6 +1,7 @@
 ﻿using AdventofCode.StatsBuilder;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -22,6 +23,7 @@ namespace AdventofCode2024 {
 		private static string puzzleNum = "1";
 
 		static void Main(string[] args) {
+			/*** DAY 1 IMPORTANT NOTE: DO THIS BEFORE STARTING ***/
 			/*** HOW TO GET SESSION ID (because I keep forgetting)
 			 * Log in
 			 * Go to a puzzle
@@ -51,10 +53,11 @@ namespace AdventofCode2024 {
 			string p = Path.GetFullPath(string.Format("./../../../inputs/day{0}.txt", puzzleNum));
 			if(!File.Exists(p)) {
 				Task.Run(async () => {
+
 					string puzzleInput = await GetInputFor(puzzleNum, conf.Keys.First());
 					if (string.IsNullOrEmpty(puzzleInput))
 					{
-						Console.WriteLine($"Puzzle {puzzleInput} not yet available!");
+						Console.WriteLine($"Puzzle {puzzleNum} not yet available!");
 						return;
 					}
 					File.WriteAllText(p, puzzleInput);
@@ -109,7 +112,8 @@ namespace AdventofCode2024 {
 			Console.Read();
 		}
 
-		static void BuildLeaderboard() {
+		static void BuildLeaderboard()
+		{
 			Task.Run(async () => {
 				AoCLeaderboard obj;
 				List<AoCUser> users = new List<AoCUser>();
@@ -154,13 +158,23 @@ namespace AdventofCode2024 {
 					}
 				}
 				builder.Append(GetTableRowScores(users));
-				string htmlTemplate = File.ReadAllText(Path.GetFullPath("./../../../inputs/leaderboard_html.txt"));
-				htmlTemplate = htmlTemplate.Replace("{", "{{").Replace("}", "}}").Replace("{{0}}", "{0}");
-				string outputFile = Path.GetFullPath("./../../../leaderboard.html");
-				if(File.Exists(outputFile)) {
-					File.Delete(outputFile);
+				try
+				{
+					string htmlTemplate = File.ReadAllText(Path.GetFullPath("./../../../inputs/leaderboard_html.txt"));
+					htmlTemplate = htmlTemplate.Replace("{", "{{").Replace("}", "}}").Replace("{{0}}", "{0}");
+					string outputFile = Path.GetFullPath("./../../../leaderboard.html");
+					if (File.Exists(outputFile))
+					{
+						File.Delete(outputFile);
+					}
+
+					File.WriteAllText(outputFile, string.Format(htmlTemplate, string.Format(mainTable, builder.ToString())));
 				}
-				File.WriteAllText(outputFile, string.Format(htmlTemplate, string.Format(mainTable, builder.ToString())));
+				catch (Exception e)
+				{
+					Console.WriteLine(e.Message);
+				}
+
 				Console.WriteLine("Finished writing leaderboard.");
 			});
 		}
@@ -168,6 +182,7 @@ namespace AdventofCode2024 {
 		private static async Task<string> GetInputFor(string day, string sessionID) {
 			//var url = new Uri(baseAddress + jsonurl);
 			var jsonurl = string.Format("{0}{1}/day/{2}/input", baseAddress, year, day);
+			Console.WriteLine(jsonurl);
 			var cookieContainer = new CookieContainer();
 			cookieContainer.Add(baseAddress, new Cookie("session", sessionID));
 
