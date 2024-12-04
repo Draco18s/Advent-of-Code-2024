@@ -571,24 +571,61 @@ namespace Draco18s.AoCLib {
 
 		public delegate bool FeatureSpec(int[,] values);
 
+		/// <summary>Example usage: Finds the following shape
+		/// <code>
+		/// M.M
+		/// .A.
+		/// S.S
+		/// 
+		/// List&lt;Vector2&gt; result = grid.LocateFeature(v =&gt;
+		/// {
+		/// 	if (grid[x + 1, y + 1] != 'A') return false;
+		///		if (grid[x + 2, y + 2] != 'M' &amp;&amp; grid[x + 2, y + 2] != 'S') return false;
+		///		if (grid[x + 2, y + 0] != 'M' &amp;&amp; grid[x + 2, y - 0] != 'S') return false;
+		///		if (grid[x + 0, y + 2] != 'M' &amp;&amp; grid[x + 0, y + 2] != 'S') return false;
+		///		if (grid[x + 0, y + 0] != 'M' &amp;&amp; grid[x + 0, y + 0] != 'S') return false;
+		///		if (grid[x + 0, y + 0] == 'M' &amp;&amp; grid[x + 2, y + 2] == 'M') return false;
+		///		if (grid[x + 0, y + 0] == 'S' &amp;&amp; grid[x + 2, y + 2] == 'S') return false;
+		///		if (grid[x + 2, y + 0] == 'M' &amp;&amp; grid[x + 0, y + 2] == 'M') return false;
+		///		if (grid[x + 2, y + 0] == 'S' &amp;&amp; grid[x + 0, y + 2] == 'S') return false;
+		/// }, new List&lt;Vector2&gt;()
+		/// {
+		/// 	new Vector2( 0,  0),
+		/// 	new Vector2(-1, -1),
+		/// 	new Vector2(-1,  1),
+		/// 	new Vector2( 1, -1),
+		/// 	new Vector2( 1,  1),
+		/// }, Grid.returnZero);</code>
+		/// </summary>
+		/// <param name="featureIdentifier"></param>
+		/// <param name="offsets"></param>
+		/// <param name="edgeHandler"></param>
+		/// <returns></returns>
+
 		public List<Vector2> LocateFeature(FeatureSpec featureIdentifier, List<Vector2> offsets, EdgeHandler edgeHandler) {
 			List<Vector2> ret = new List<Vector2>();
-			int mx = offsets.Max(p => p.x);
-			int Mx = offsets.Min(p => p.x);
-			int my = offsets.Max(p => p.y);
-			int My = offsets.Min(p => p.y);
+			int Mx = offsets.Max(p => p.x);
+			int mx = offsets.Min(p => p.x);
+			int My = offsets.Max(p => p.y);
+			int my = offsets.Min(p => p.y);
 			int w = Mx - mx + 1; 
 			int h = My - my + 1;
 			
 			for(int y = MinY; y < MaxY; y++) {
-				for(int x = MinX; x < MinX; x++) {
+				for(int x = MinX; x < MaxX; x++) {
 					int[,] vals = new int[w,h];
 					foreach(Vector2 off in offsets) {
-						if(x + off.x < MinX || x+off.x >= MaxX || y + off.y < MinY || y+off.y >= MaxY) {
-							vals[off.x+mx,off.y+my] = edgeHandler();
+						if(x + off.x < MinX || x+off.x >= MaxX || y + off.y < MinY || y+off.y >= MaxY)
+						{
+							int yy = off.y - my;
+							int xx = off.x - mx;
+							vals[xx, yy] = edgeHandler();
 						}
-						else {
-							vals[off.x+mx,off.y+my] = cells[x+off.x,y+off.y];
+						else
+						{
+							int yy = off.y - my;
+							int xx = off.x - mx;
+							vals[xx, yy] = cells[x + off.x, y + off.y];
 						}
 					}
 					if(featureIdentifier(vals)) {

@@ -1,7 +1,6 @@
 ﻿using AdventofCode.StatsBuilder;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,7 +8,6 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Draco18s.AoCLib;
 
 namespace AdventofCode2024 {
 	static class Program {
@@ -20,7 +18,7 @@ namespace AdventofCode2024 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "3";
+		private static string puzzleNum = "4";
 
 		static void Main(string[] args) {
 			/*** DAY 1 IMPORTANT NOTE: DO THIS BEFORE STARTING ***/
@@ -299,7 +297,7 @@ namespace AdventofCode2024 {
 						if((x.completion_day_level[day][part].dateTime - start).TotalHours > MAX_EXPECTED)
 						{
 							DateTime s = (x.completion_day_level[day][part].dateTime - averageTime);
-							int extra = s.Minute % 15;
+							int extra = s.Minute % 5;
 							s = s.AddMinutes(-extra);
 							xDur = x.completion_day_level[day][part].dateTime - s;
 						}
@@ -310,7 +308,7 @@ namespace AdventofCode2024 {
 						if ((y.completion_day_level[day][part].dateTime - start).TotalHours > MAX_EXPECTED)
 						{
 							DateTime s = (y.completion_day_level[day][part].dateTime - averageTime);
-							int extra = s.Minute % 15;
+							int extra = s.Minute % 5;
 							s = s.AddMinutes(-extra);
 							yDur = y.completion_day_level[day][part].dateTime - s;
 						}
@@ -354,7 +352,7 @@ namespace AdventofCode2024 {
 					if ((user.completion_day_level[day][part].dateTime - start).TotalHours > MAX_EXPECTED)
 					{
 						DateTime s = (user.completion_day_level[day][part].dateTime - averageTime);
-						int extra = s.Minute % 15;
+						int extra = s.Minute % 5;
 						s = s.AddMinutes(-extra);
 						yDur = user.completion_day_level[day][part].dateTime - s;
 					}
