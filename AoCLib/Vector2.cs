@@ -49,5 +49,22 @@ namespace Draco18s.AoCLib {
 		public override string ToString() {
 			return $"({x},{y})";
 		}
+
+		public override bool Equals(object other)
+		{
+			if (other is Vector2 v)
+				return Equals(v);
+			return false;
+		}
+
+		public bool Equals(Vector2 other)
+		{
+			return x == other.x && y == other.y;
+		}
+
+		public override int GetHashCode()
+		{
+			return x.GetHashCode() ^ (y.GetHashCode() << 2);
+		}
 	}
 }
