@@ -19,4 +19,5 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 2: started 11 minutes late because I DIDN'T SET AN ALARM.*
 *Day 3: eeey sub-1000. Part 2 took two guesses. My first attempt was incorrectly determining the most recent do/don't instruction.*
 *Day 5: eeey sub-1000. Part 2 was "oh I can juse use a custom comparison sort operation."*
-*Day 7: part 1 ran "fast enough," part 2 did not. While it was crunching I worked out an optimization. Probably didn't end up saving any time, as it was still "minutes" worth of compute, but hey, got it down to a second.*
+*Day 6: solved it using an inefficient solution and found the better one after it was done. The 9 minute execution time was longer than the amount of time than I expected it to take me to work out better.*
+*Day 7: part 1 ran "fast enough," part 2 did not. While it was crunching I worked out the optimization.*
