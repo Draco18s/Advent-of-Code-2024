@@ -169,8 +169,6 @@ namespace AdventofCode2024
 					mem.RemoveAt(i+1);
 				}
 			}
-
-			;
 		}
 
 		private static void CompactFiles(List<MemoryBlock> mem)
