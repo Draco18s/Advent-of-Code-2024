@@ -54,6 +54,22 @@ namespace Draco18s.AoCLib {
 			}
 		}
 
+		public Grid(Grid o)
+		{
+			width = o.Width;
+			height = o.Height;
+			cells = new int[width, height];
+			offsetx = o.offsetx;
+			offsety = o.offsety;
+			for (int x = 0; x < o.Width; x++)
+			{
+				for (int y = 0; y < o.Height; y++)
+				{
+					cells[x, y] = o.cells[x, y];
+				}
+			}
+		}
+
 		public int Width => width;
 		public int Height => height;
 		public int MinX => offsetx;
@@ -401,6 +417,7 @@ namespace Draco18s.AoCLib {
 
 			List<Vector2> open = new List<Vector2>();
 			open.Add((pos));
+			this[pos] = fillValue(pos, pos);
 
 			while (open.Count > 0)
 			{
@@ -408,6 +425,7 @@ namespace Draco18s.AoCLib {
 				open.RemoveAt(0);
 
 				int L = this[pos];
+				int v;
 
 				if (p.x >= this.MaxX || p.y >= this.MaxY || p.x < this.MinX || p.y < this.MinY) continue;
 
@@ -417,7 +435,6 @@ namespace Draco18s.AoCLib {
 				int S = (p.y == this.MaxY - 1) ? edgeHandler() : this[p.x, p.y + 1];
 				int E = (p.x == this.MaxX - 1) ? edgeHandler() : this[p.x + 1, p.y];
 				
-				int v;
 				if (shouldFill(new Vector2(p.x, p.y-1), new Vector2(p.x, p.y), L, N))
 				{
 					if (p.y - 1 < this.MinY) continue;
@@ -470,7 +487,6 @@ namespace Draco18s.AoCLib {
 			}
 
 			return size;
-
 		}
 
 		public long FloodFill(int _x, int _y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals = false)
