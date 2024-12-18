@@ -131,7 +131,19 @@ namespace AdventofCode2024
 		{
 			for (long i = 0; i < count; i+= step) yield return start + i;
 		}
-		
+
+		/*
+		 Input program, broken down
+		   2,4, //  B = A%8
+		   1,2, //  B = B XOR 2
+		   7,5, //  C = A/(2^B)
+		   4,3, //  B = B XOR C
+		   0,3, //  A = A/8
+		   1,7, //  B = B XOR 7
+		   5,5, //  print register B%8
+		   3,0
+		*/
+
 		internal static long Part2(string input)
 		{
 			string[] lines = input.Split('\n');
