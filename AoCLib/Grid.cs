@@ -665,5 +665,17 @@ namespace Draco18s.AoCLib {
 				FloodFill(_x, _y - 1, condition, fillValue);
 			}
 		}
+		public Vector2 FindFirst(char c)
+		{
+			for (int y = MinY; y < MaxY; y++)
+			{
+				for (int x = MinX; x < MaxX; x++)
+				{
+					if (cells[x, y] == c)
+						return new Vector2(x, y);
+				}
+			}
+			return new Vector2(int.MinValue, int.MinValue);
+		}
 	}
 }
