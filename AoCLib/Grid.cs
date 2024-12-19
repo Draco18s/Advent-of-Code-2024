@@ -19,6 +19,8 @@ namespace Draco18s.AoCLib {
 		public static EdgeHandler returnInf = () => int.MaxValue;
 		public static EdgeHandler returnNegInf = () => int.MinValue;
 
+		public static readonly Vector2[] FACING = new[] { Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN };
+
 		public Grid(int w, int h, int offx=0, int offy=0) {
 			width = w;
 			height = h;
@@ -370,8 +372,14 @@ namespace Draco18s.AoCLib {
 				if(format == "char") format += "+32";
 				int.TryParse(format.Substring(4, format.Length-4), out int v);
 				for(int y = 0; y < height; y++) {
-					for(int x = 0; x < width; x++) {
-						sb.Append(((char)(this[x,y,false]+v)).ToString());
+					for(int x = 0; x < width; x++)
+					{
+						if (this[x, y, false] < 0)
+							sb.Append("#");
+						else if (this[x, y, false] == int.MaxValue)
+							sb.Append(" ");
+						else
+							sb.Append(((char)((this[x, y, false]%(128-v)+v))).ToString());
 					}
 					sb.Append('\n');
 				}
@@ -676,6 +684,78 @@ namespace Draco18s.AoCLib {
 				}
 			}
 			return new Vector2(int.MinValue, int.MinValue);
+		}
+
+		public class PathNode
+		{
+			public Vector2 pos;
+			public int cost;
+			public PathNode parent;
+
+			public override int GetHashCode()
+			{
+				return pos.GetHashCode();
+			}
+		}
+
+		public IEnumerable<PathNode> Pathfind(Vector2 start, Vector2 end, Func<int,bool> isOpen)
+		{
+			//always return a non-empty list. a no-path result is simply a node at the start with maximum cost
+			List<PathNode> paths = new List<PathNode>()
+			{
+				new PathNode()
+				{
+					pos = start,
+					cost = int.MaxValue,
+					parent = null
+				}
+			};
+
+			List<PathNode> open = new List<PathNode>();
+			Dictionary<Vector2, PathNode> closed = new Dictionary<Vector2, PathNode>();
+			open.Add(new PathNode()
+			{
+				pos = start,
+				cost = 0,
+				parent = null
+			});
+			while (open.Count > 0)
+			{
+				PathNode p = open[^1];
+				open.Remove(p);
+				if (!closed.ContainsKey(p.pos) || closed[p.pos].cost > p.cost)
+				{
+					closed[p.pos] = p;
+				}
+				if(p.pos == end)
+					paths.Add(p);
+				foreach (Vector2 d in FACING)
+				{
+					if (!IsInside(p.pos + d)) continue;
+					if(!isOpen(this[p.pos + d])) continue;
+
+					int q = closed.ContainsKey(p.pos + d) ? closed[p.pos + d].cost : int.MaxValue;
+					int v = open.Where(o => o.pos == p.pos + d).DefaultIfEmpty(new PathNode()
+					{
+						cost = int.MaxValue
+					}).Min(o => o.cost);
+					q = Math.Min(q, v);
+					if (q > p.cost + 1)
+					{
+						open.Add(new PathNode()
+						{
+							pos = p.pos + d,
+							cost = p.cost + 1,
+							parent = p
+						});
+					}
+				}
+				open.Sort((b,a) => a.cost.CompareTo(b.cost));
+			}
+
+			IOrderedEnumerable<PathNode> or = paths.OrderBy(p => p.cost);
+			int m = or.First().cost;
+			return or.TakeWhile(p => p.cost == m);
 		}
 	}
 }
