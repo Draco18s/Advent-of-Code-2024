@@ -3,7 +3,12 @@ using System;
 namespace Draco18s.AoCLib {
 	public struct Vector2
 	{
-		//public static Vector2 ONE = new Vector2(1, 1);
+		public static readonly Vector2 ZERO = new Vector2(0, 0);
+		public static readonly Vector2 ONE = new Vector2(1, 1);
+		public static readonly Vector2 LEFT = new Vector2(-1, 0);
+		public static readonly Vector2 RIGHT = new Vector2(1, 0);
+		public static readonly Vector2 UP = new Vector2(0, -1);
+		public static readonly Vector2 DOWN = new Vector2(0, 1);
 
 		public readonly int x;
 		public readonly int y;
