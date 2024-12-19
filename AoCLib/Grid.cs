@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -688,9 +689,26 @@ namespace Draco18s.AoCLib {
 
 		public class PathNode
 		{
-			public Vector2 pos;
-			public int cost;
-			public PathNode parent;
+			public readonly Vector2 pos;
+			public readonly Vector2 dir;
+			public readonly int cost;
+			public readonly PathNode parent;
+
+			public PathNode(Vector2 p, int c, PathNode parent = null)
+			{
+				pos = p;
+				dir = Vector2.ZERO;
+				cost = c;
+				this.parent = parent;
+			}
+
+			public PathNode(Vector2 p, Vector2 d, int c, PathNode parent = null)
+			{
+				pos = p;
+				dir = d;
+				cost = c;
+				this.parent = parent;
+			}
 
 			public override int GetHashCode()
 			{
@@ -698,27 +716,43 @@ namespace Draco18s.AoCLib {
 			}
 		}
 
-		public IEnumerable<PathNode> Pathfind(Vector2 start, Vector2 end, Func<int,bool> isOpen)
+		/// <summary>
+		/// Find a path from S to E
+		/// </summary>
+		/// <param name="start">Start Pos</param>
+		/// <param name="end">End Pos</param>
+		/// <param name="isWalkable">(pos) => return if pos is walkable / open space / not a wall</param>
+		/// <returns>List of all minimal distance paths</returns>
+		public IEnumerable<PathNode> FindShortestPath(Vector2 start, Vector2 end, Func<Vector2, bool> isWalkable)
+		{
+			return FindShortestPath(start, end, (_,p2) => isWalkable(p2), (_, _, _, _) => 1);
+		}
+
+		/// <summary>
+		/// Find a path from S to E
+		/// </summary>
+		/// <param name="start">Start Pos</param>
+		/// <param name="end">End Pos</param>
+		/// <param name="canMove">(currentPosition, nextPosition) => return if move is allowed</param>
+		/// <param name="getCost">(currentPosition, nextPosition, currentFacing, nextFacing) => return move cost</param>
+		/// <returns>List of all minimal distance paths</returns>
+		public IEnumerable<PathNode> FindShortestPath(Vector2 start, Vector2 end, Func<Vector2, Vector2, bool> canMove, Func<Vector2, Vector2, Vector2, Vector2, int> getCost)
 		{
 			//always return a non-empty list. a no-path result is simply a node at the start with maximum cost
 			List<PathNode> paths = new List<PathNode>()
 			{
-				new PathNode()
-				{
-					pos = start,
-					cost = int.MaxValue,
-					parent = null
-				}
+				new PathNode(
+					start,
+					int.MaxValue
+				)
 			};
 
 			List<PathNode> open = new List<PathNode>();
 			Dictionary<Vector2, PathNode> closed = new Dictionary<Vector2, PathNode>();
-			open.Add(new PathNode()
-			{
-				pos = start,
-				cost = 0,
-				parent = null
-			});
+			open.Add(new PathNode(
+				start,
+				0
+			));
 			while (open.Count > 0)
 			{
 				PathNode p = open[^1];
@@ -732,30 +766,31 @@ namespace Draco18s.AoCLib {
 				foreach (Vector2 d in FACING)
 				{
 					if (!IsInside(p.pos + d)) continue;
-					if(!isOpen(this[p.pos + d])) continue;
+					if(!canMove(p.pos, p.pos + d)) continue;
 
 					int q = closed.ContainsKey(p.pos + d) ? closed[p.pos + d].cost : int.MaxValue;
-					int v = open.Where(o => o.pos == p.pos + d).DefaultIfEmpty(new PathNode()
-					{
-						cost = int.MaxValue
-					}).Min(o => o.cost);
+					int v = open.Where(o => o.pos == p.pos + d).DefaultIfEmpty(new PathNode(
+						Vector2.ZERO, 
+						int.MaxValue
+					)).Min(o => o.cost);
 					q = Math.Min(q, v);
-					if (q > p.cost + 1)
+					int cost = getCost(p.pos, p.pos + d, p.dir, d);
+					if (q > p.cost + cost)
 					{
-						open.Add(new PathNode()
-						{
-							pos = p.pos + d,
-							cost = p.cost + 1,
-							parent = p
-						});
+						open.Add(new PathNode(
+							p.pos + d,
+							p.cost + cost,
+							p
+						));
 					}
 				}
 				open.Sort((b,a) => a.cost.CompareTo(b.cost));
 			}
 
-			IOrderedEnumerable<PathNode> or = paths.OrderBy(p => p.cost);
-			int m = or.First().cost;
-			return or.TakeWhile(p => p.cost == m);
+			//IOrderedEnumerable<PathNode> or = paths.OrderBy(p => p.cost);
+			//int m = or.First().cost;
+			//return or.TakeWhile(p => p.cost == m);
+			return paths.GroupBy(o => o.cost).OrderBy(g => g.Key).Select(g => g.First());
 		}
 	}
 }
