@@ -6,6 +6,8 @@ https://adventofcode.com/2024/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+ 20   00:17:43   490      0   01:38:33   2496      0
+ 19   00:53:08  4881      0   13:27:24  17272      0
  18   01:28:50  6254      0   01:34:34   5724      0
  17   01:07:06  4897      0   22:09:30  15089      0
  16   00:10:41   532      0   03:10:52   4674      0
@@ -43,3 +45,4 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 16: Part 2 decided to be stubborn, for no reason.*
 *Day 17: Part 2 was absoltely bonkers hard and was basically reversing a one-way cryptograpic cypher algorithm. Yuck.*
 *Day 18: For some reason, pathfinding this maze just did. Not. Want. To. Complete. In a reasonable time frame (like, more open nodes than points on the maze level of bullshittery). Ended up doing a depth-first flood-fill, yuck. Part 2 was relatively trivial at that point. Once again finding a need for a lib pathfind solution.*
+*Day 20: Part 2 stymied me for the longest time and when I found the problem I felt stupid. It was exactly the problem Adam had and even when he said it I still couldn't see it.*
