@@ -111,7 +111,8 @@ namespace AdventofCode2024
 
 			foreach (Computer cm in lookup.Values)
 			{
-				if (cm.ID[0] != 't') continue;
+				//assumption that worked on my input but not all
+				//if (cm.ID[0] != 't') continue;
 				foreach (string cn in cm.connections)
 				{
 					HashSet<string> found = new HashSet<string>();
