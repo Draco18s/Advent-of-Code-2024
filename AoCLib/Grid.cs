@@ -725,7 +725,7 @@ namespace Draco18s.AoCLib {
 		/// <returns>List of all minimal distance paths</returns>
 		public IEnumerable<PathNode> FindShortestPath(Vector2 start, Vector2 end, Func<Vector2, bool> isWalkable)
 		{
-			return FindShortestPath(start, end, (_,p2) => isWalkable(p2), (_, _, _, _) => 1);
+			return FindShortestPath(start, end, Vector2.ZERO, (_,p2) => isWalkable(p2), (_, _, _, _) => 1);
 		}
 
 		/// <summary>
@@ -736,13 +736,14 @@ namespace Draco18s.AoCLib {
 		/// <param name="canMove">(currentPosition, nextPosition) => return if move is allowed</param>
 		/// <param name="getCost">(currentPosition, nextPosition, currentFacing, nextFacing) => return move cost</param>
 		/// <returns>List of all minimal distance paths</returns>
-		public IEnumerable<PathNode> FindShortestPath(Vector2 start, Vector2 end, Func<Vector2, Vector2, bool> canMove, Func<Vector2, Vector2, Vector2, Vector2, int> getCost)
+		public IEnumerable<PathNode> FindShortestPath(Vector2 start, Vector2 end, Vector2 fa, Func<Vector2, Vector2, bool> canMove, Func<Vector2, Vector2, Vector2, Vector2, int> getCost)
 		{
 			//always return a non-empty list. a no-path result is simply a node at the start with maximum cost
 			List<PathNode> paths = new List<PathNode>()
 			{
 				new PathNode(
 					start,
+					fa,
 					int.MaxValue
 				)
 			};
@@ -779,6 +780,7 @@ namespace Draco18s.AoCLib {
 					{
 						open.Add(new PathNode(
 							p.pos + d,
+							d,
 							p.cost + cost,
 							p
 						));
@@ -787,10 +789,10 @@ namespace Draco18s.AoCLib {
 				open.Sort((b,a) => a.cost.CompareTo(b.cost));
 			}
 
-			//IOrderedEnumerable<PathNode> or = paths.OrderBy(p => p.cost);
-			//int m = or.First().cost;
-			//return or.TakeWhile(p => p.cost == m);
-			return paths.GroupBy(o => o.cost).OrderBy(g => g.Key).Select(g => g.First());
+			IOrderedEnumerable<PathNode> or = paths.OrderBy(p => p.cost);
+			int m = or.First().cost;
+			return or.TakeWhile(p => p.cost == m);
+			//return paths.GroupBy(o => o.cost).OrderBy(g => g.Key).Select(g => g.First());
 		}
 	}
 }
