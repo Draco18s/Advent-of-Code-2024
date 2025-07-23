@@ -18,7 +18,7 @@ namespace AdventofCode2024 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "25";
+		private static string puzzleNum = "11";
 
 		static void Main(string[] args) {
 			/*** DAY 1 IMPORTANT NOTE: DO THIS BEFORE STARTING ***/
@@ -104,7 +104,7 @@ namespace AdventofCode2024 {
 				e = DateTime.Now;
 				Console.WriteLine(result);
 				Console.WriteLine("Time: " + (e - s).TotalMilliseconds);
-				BuildLeaderboard();
+				//BuildLeaderboard();
 			}
 			
 			Console.Read();
